@@ -198,7 +198,7 @@
  */
 @property (readonly, nonatomic, assign, getter = isExpired) BOOL expired;
 
-@property (readonly, nonatomic) NSNumber *oasisMemberId;
+@property (strong, nonatomic) NSNumber *oasisMemberId;
 
 ///--------------------------------------------
 /// @name Creating and Initializing Credentials

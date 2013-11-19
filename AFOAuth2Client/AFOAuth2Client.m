@@ -193,18 +193,19 @@ static NSMutableDictionary * AFKeychainQueryDictionaryWithIdentifier(NSString *i
         }
 
         AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:[responseObject valueForKey:@"access_token"] tokenType:[responseObject valueForKey:@"token_type"]];
-        
-// liyu <
-        NSNumber *memberId = (NSNumber *)[responseObject objectForKey:@"memberId"];
-        credential.oasisMemberId = memberId;
-// liyu >
 
         NSDate *expireDate = nil;
         id expiresIn = [responseObject valueForKey:@"expires_in"];
         if (expiresIn != nil && ![expiresIn isEqual:[NSNull null]]) {
             expireDate = [NSDate dateWithTimeIntervalSinceNow:[expiresIn doubleValue]];
         }
-
+        
+// liyu <
+        NSNumber *memberId = (NSNumber *)[responseObject objectForKey:@"memberId"];
+        credential.oasisMemberId = memberId;
+        
+        if (refreshToken)
+// liyu >
         [credential setRefreshToken:refreshToken expiration:expireDate];
 
         [self setAuthorizationHeaderWithCredential:credential];
@@ -230,7 +231,6 @@ static NSMutableDictionary * AFKeychainQueryDictionaryWithIdentifier(NSString *i
 @property (readwrite, nonatomic) NSString *tokenType;
 @property (readwrite, nonatomic) NSString *refreshToken;
 @property (readwrite, nonatomic) NSDate *expiration;
-@property (readwrite, nonatomic) NSNumber *oasisMemberId;
 @end
 
 @implementation AFOAuthCredential
@@ -283,7 +283,7 @@ static NSMutableDictionary * AFKeychainQueryDictionaryWithIdentifier(NSString *i
 
 #ifdef _SECURITY_SECITEM_H_
 
-+ (BOOL)storeCredential:(AFOAuth1Token *)credential
++ (BOOL)storeCredential:(AFOAuthCredential *)credential
          withIdentifier:(NSString *)identifier
 {
     id securityAccessibility = nil;
